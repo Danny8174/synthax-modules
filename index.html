@@ -1,43 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Synthax Voice Input</title>
+  <meta charset="UTF-8">
+  <title>Synthax Web Runner + Docs</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    #output { margin-top: 20px; padding: 10px; background: #f0f0f0; }
+    body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
+    #controls { background: #1e1e1e; color: white; padding: 10px; display: flex; gap: 10px; align-items: center; }
+    #editor { height: 60%; }
+    #output { flex: 1; background: #111; color: #0f0; padding: 10px; font-family: monospace; overflow: auto; white-space: pre-wrap; }
+    a { color: #0ff; text-decoration: none; margin-left: auto; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js"></script>
 </head>
 <body>
-  <h1>Synthax Voice Input</h1>
-  <button onclick="startListening()">Start Voice Input</button>
-  <p id="status">Status: Idle</p>
-  <div id="output">// Transcribed text will appear here</div>
+  <div id="controls">
+    <button onclick="runCode()">Run (Ctrl+Enter)</button>
+    <button onclick="clearOutput()">Clear</button>
+    <select onchange="loadExample(this.value)">
+      <option disabled selected>Load Example</option>
+      <option value="log \"Hello, Synthax World!\"">hello_world.synth</option>
+      <option value="log \"Waiting 2 seconds...\"\nwait 2\nlog \"Done waiting.\"">wait_and_log.synth</option>
+      <option value="predict \"Will AI improve humanity?\" -> result\nlog result">predict_example.synth</option>
+      <option value="askAI \"Summarize the meaning of life in one sentence.\" -> answer\nlog answer">ask_ai_example.synth</option>
+      <option value="set mood = \"optimistic\"\nlog \"My current mood is:\"\nlog mood">set_and_log.synth</option>
+    </select>
+    <a href="https://danny8174.github.io/synthax-modules/syntax.html" target="_blank">Docs</a>
+  </div>
+
+  <div id="editor"></div>
+  <pre id="output">// Output will appear here</pre>
 
   <script>
-    const output = document.getElementById("output");
-    const status = document.getElementById("status");
+    let editor;
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs' }});
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '// Write Synthax code or select from examples',
+        language: 'plaintext',
+        theme: 'vs-dark'
+      });
 
-    function startListening() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Web Speech API not supported in this browser.");
-        return;
-      }
+      window.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.key === "Enter") runCode();
+      });
+    });
 
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.lang = "en-US";
+    async function runCode() {
+      const code = editor.getValue();
+      const res = await fetch("https://synthax-backend.onrender.com/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = data.output || "// No output";
+    }
 
-      recognition.onstart = () => status.textContent = "Status: Listening...";
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        output.textContent = "// " + transcript;
-        status.textContent = "Status: Done";
-      };
-      recognition.onerror = (event) => {
-        status.textContent = "Error: " + event.error;
-      };
-      recognition.start();
+    function clearOutput() {
+      document.getElementById("output").textContent = "";
+    }
+
+    function loadExample(code) {
+      editor.setValue(code);
     }
   </script>
 </body>
