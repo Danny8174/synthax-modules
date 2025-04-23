@@ -1,69 +1,64 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Synthax Assistant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Synthax Runner + AI Assistant</title>
   <style>
-    body {
-      font-family: monospace;
-      background: #111;
-      color: #eee;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    textarea {
-      width: 90%;
-      height: 150px;
-      background: #222;
-      color: #0f0;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    pre {
-      background: #222;
-      color: #0f0;
-      padding: 10px;
-      width: 90%;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
+    body { background: #121212; color: #eee; font-family: monospace; margin: 0; padding: 1rem; }
+    h1 { margin-bottom: 1rem; }
+    textarea, pre, input { width: 100%; background: #1e1e1e; color: #0f0; border: none; padding: 1rem; font-size: 1rem; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem 0.25rem; background: #333; color: white; border: none; cursor: pointer; }
+    .section { margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
-  <h2>Synthax Assistant</h2>
-  <textarea id="codeInput">// Write Synthax code here</textarea>
-  <button onclick="runSynthax()">Run Synthax</button>
-  <pre id="output">// Output will appear here</pre>
+  <h1>Synthax AI Runner</h1>
+
+  <div class="section">
+    <h3>AI Assistant (Describe what you want)</h3>
+    <input id="aiPrompt" placeholder="e.g., Wait 2 seconds, then log 'Done'" />
+    <button onclick="generateSynthax()">Generate Synthax</button>
+  </div>
+
+  <div class="section">
+    <h3>Synthax Code Editor</h3>
+    <textarea id="code" rows="8">// Paste or generate Synthax code here</textarea>
+    <button onclick="runCode()">Run</button>
+    <button onclick="clearOutput()">Clear</button>
+  </div>
+
+  <div class="section">
+    <h3>Output</h3>
+    <pre id="output">// Output will appear here</pre>
+  </div>
 
   <script>
-    function runSynthax() {
-      const code = document.getElementById("codeInput").value;
+    function runCode() {
+      const code = document.getElementById("code").value;
       const output = document.getElementById("output");
-      // Simulate response for now
-      if (code.includes("log")) {
-        const match = code.match(/log\s+\"(.+?)\"/);
-        if (match) {
-          output.textContent = match[1];
-        } else {
-          output.textContent = "Error parsing log command.";
-        }
+      if (code.includes('log')) {
+        const match = code.match(/log\s+"(.+?)"/);
+        output.textContent = match ? match[1] : "// No log output found.";
       } else {
-        output.textContent = "Unsupported Synthax command.";
+        output.textContent = "// No log command in code.";
       }
+    }
+
+    function clearOutput() {
+      document.getElementById("output").textContent = "// Output will appear here";
+    }
+
+    function generateSynthax() {
+      const prompt = document.getElementById("aiPrompt").value.toLowerCase();
+      let generated = "// Could not interpret prompt.";
+      if (prompt.includes("wait") && prompt.includes("then log")) {
+        generated = 'wait 2\nlog "Done"';
+      } else if (prompt.includes("log")) {
+        const msg = prompt.match(/log ['"](.*?)['"]/);
+        generated = msg ? `log "${msg[1]}"` : 'log "Hello"';
+      }
+      document.getElementById("code").value = generated;
     }
   </script>
 </body>
