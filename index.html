@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Synthax Voice Input</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #output { margin-top: 20px; padding: 10px; background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>Synthax Voice Input</h1>
+  <button onclick="startListening()">Start Voice Input</button>
+  <p id="status">Status: Idle</p>
+  <div id="output">// Transcribed text will appear here</div>
+
+  <script>
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Web Speech API not supported in this browser.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => status.textContent = "Status: Listening...";
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        output.textContent = "// " + transcript;
+        status.textContent = "Status: Done";
+      };
+      recognition.onerror = (event) => {
+        status.textContent = "Error: " + event.error;
+      };
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
