@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Synthax Command Reference</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; color: #222; }
+    h1 { margin-bottom: 1rem; }
+    h2 { margin-top: 2rem; color: #444; }
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+    .command { margin-bottom: 1rem; }
+    .example { background: #333; color: #0f0; padding: 10px; white-space: pre-wrap; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Synthax Command Reference</h1>
+
+  <div class="command">
+    <h2>log</h2>
+    <p>Outputs a message to the console.</p>
+    <div class="example">log "Hello, world!"</div>
+  </div>
+
+  <div class="command">
+    <h2>wait</h2>
+    <p>Pauses execution for a number of seconds.</p>
+    <div class="example">wait 2</div>
+  </div>
+
+  <div class="command">
+    <h2>set</h2>
+    <p>Stores a variable for reuse.</p>
+    <div class="example">set mood = "curious"</div>
+  </div>
+
+  <div class="command">
+    <h2>askAI</h2>
+    <p>Queries the AI with a prompt. Use → to assign the response to a variable.</p>
+    <div class="example">askAI "What is Synthax?" → answer</div>
+  </div>
+
+  <div class="command">
+    <h2>predict</h2>
+    <p>Requests a prediction or suggestion. Output is assigned to a result variable.</p>
+    <div class="example">predict "Next move?" → step</div>
+  </div>
+</body>
+</html>
