@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Synthax Runner</title>
+  <style>
+    body { background-color: #121212; color: #eee; font-family: monospace; margin: 0; padding: 2rem; }
+    textarea, pre { width: 100%; background: #1e1e1e; color: #0f0; border: none; padding: 1rem; font-size: 1rem; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem 0; background: #333; color: #fff; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Synthax Code Runner</h1>
+  <textarea id="code" rows="8">// Paste Synthax code here
+log "Hello from Synthax!"</textarea><br/>
+  <button onclick="runCode()">Run</button>
+  <button onclick="clearOutput()">Clear</button>
+  <pre id="output">// Output will appear here</pre>
+
+  <script>
+    function runCode() {
+      const code = document.getElementById("code").value;
+      const output = document.getElementById("output");
+      if (code.includes('log')) {
+        const match = code.match(/log\s+"(.+?)"/);
+        output.textContent = match ? match[1] : "// No log output found.";
+      } else {
+        output.textContent = "// No log command in code.";
+      }
+    }
+    function clearOutput() {
+      document.getElementById("output").textContent = "// Output will appear here";
+    }
+  </script>
+</body>
+</html>
