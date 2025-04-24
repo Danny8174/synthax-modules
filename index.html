@@ -1,39 +1,36 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Synthax Runner (Mobile Friendly)</title>
+  <title>Synthax Web Runner</title>
   <style>
-    body { background: #111; color: #0f0; font-family: monospace; padding: 10px; }
-    textarea, button { width: 100%; margin: 10px 0; font-family: monospace; }
-    button { padding: 10px; background: #222; color: #0f0; border: 1px solid #0f0; }
-    pre { white-space: pre-wrap; background: #000; padding: 10px; }
+    body { display: flex; font-family: sans-serif; margin: 0; height: 100vh; }
+    textarea { width: 50%; height: 100%; padding: 10px; font-family: monospace; font-size: 14px; }
+    pre { width: 50%; height: 100%; margin: 0; background: #111; color: #0f0; padding: 10px; overflow: auto; }
   </style>
 </head>
 <body>
-  <h2>Synthax Web Runner</h2>
-  <textarea id="input" rows="5">// Paste Synthax code here</textarea>
-  <button onclick="runCode()">Run</button>
+  <textarea id="code">// Paste Synthax code here</textarea>
   <pre id="output">// Output will appear here</pre>
-
   <script>
+    const codeArea = document.getElementById("code");
+    const output = document.getElementById("output");
+
     async function runCode() {
-      const code = document.getElementById("input").value;
-      const output = document.getElementById("output");
-      output.textContent = "// Running...";
-      try {
-        const res = await fetch("https://synthax-backend.onrender.com/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input: code })
-        });
-        const data = await res.json();
-        output.textContent = data.output || "// No output received";
-      } catch (e) {
-        output.textContent = "// Network error: " + e.message;
-      }
+      const res = await fetch("/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: codeArea.value })
+      });
+      const data = await res.json();
+      output.textContent = data.output || "// No output";
     }
+
+    codeArea.addEventListener("keydown", e => {
+      if (e.ctrlKey && e.key === "Enter") {
+        runCode();
+      }
+    });
   </script>
 </body>
 </html>
